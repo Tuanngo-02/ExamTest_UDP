@@ -26,8 +26,11 @@ public class ClientLoginGUI extends JFrame {
 	private JRadioButton Student_JBT, Teacher_JBT,Parents_JBT;
 	private JTextField username_TF;
 	private JPasswordField password_TF;
+	public String user; 
 	
-
+	 public String getUser() {
+	        return user;
+	    }
 	/**
 	 * Launch the application.
 	 */
@@ -123,8 +126,8 @@ public class ClientLoginGUI extends JFrame {
 					select = Parents_JBT.getText();
 				}
 				ClientLogin clientLogin = new ClientLogin();
+				user = username_TF.getText();
 				try {
-					
 				    clientLogin.Login(username_TF.getText(), password_TF.getText(), select, response -> {
 				        // Xử lý response ở đây
 				        String note = response;  // Cập nhật note trong callback
@@ -136,7 +139,7 @@ public class ClientLoginGUI extends JFrame {
 				                studentGUI.setVisible(true);
 				                dispose();
 				            } else if (select.equals("Teacher")) {
-				                TeacherGUI teacherGUI = new TeacherGUI();
+				                TeacherGUI teacherGUI = new TeacherGUI(username_TF.getText());
 				                teacherGUI.setVisible(true);
 				                dispose();
 				            }

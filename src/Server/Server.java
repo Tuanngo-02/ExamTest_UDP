@@ -51,6 +51,37 @@ public class Server {
 			System.out.println(String.join(";", lop));
 		    return String.join(";", lop); // Trả về dữ liệu dưới dạng chuỗi
 		}
+		case "QUESTION":
+		{
+			String nameExam = requestParts[1];
+			String questionOrder = requestParts[2];
+            String questionText = requestParts[3];
+            String options = requestParts[4];
+            String correctAnswer = requestParts[5];
+            ServerSaveData saveData = new ServerSaveData();
+            saveData.saveCauHoi(nameExam, questionOrder, questionText, options, correctAnswer);
+            System.out.println(nameExam);
+//			if (requestParts.length >= 7) {
+//                
+//            } else {
+//                return "Insufficient data for QUESTION request";
+//            }
+		}
+		case "BAITHI":
+		{
+			String username = requestParts[1];
+            String name = requestParts[2];
+            String subject = requestParts[3];
+            String classID = requestParts[4];
+            ServerSaveData saveData = new ServerSaveData();
+            saveData.saveBaiThi(username,name, subject, classID);
+//			if (requestParts.length >= 2) {
+//                
+////                System.out.println(username);
+//            } else {
+//                return "Insufficient data for QUESTION request";
+//            }
+		}
 		case "REGISTER":
 			if (requestParts.length >= 7) {
                 String username = requestParts[1];

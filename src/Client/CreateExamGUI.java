@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -20,10 +21,11 @@ public class CreateExamGUI extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
+	private JTextField tfName;
+	private JTextField tfSubject;
 	private JComboBox<String> comboBox;
 	private JLabel textNotification;
+	private File selectedFile;
 
 	/**
 	 * Launch the application.
@@ -32,7 +34,7 @@ public class CreateExamGUI extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					CreateExamGUI frame = new CreateExamGUI();
+					CreateExamGUI frame = new CreateExamGUI(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -44,7 +46,7 @@ public class CreateExamGUI extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public CreateExamGUI() {
+	public CreateExamGUI(String name) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 499, 332);
 		contentPane = new JPanel();
@@ -85,21 +87,22 @@ public class CreateExamGUI extends JFrame {
 		contentPane.add(lblSubject);
 		
 		JLabel lblSelectClass_1_1_1 = new JLabel("fileTest");
-		lblSelectClass_1_1_1.setBounds(20, 160, 81, 24);
+		lblSelectClass_1_1_1.setBounds(20, 181, 81, 24);
 		contentPane.add(lblSelectClass_1_1_1);
 		
-		textField = new JTextField();
-		textField.setBounds(99, 83, 150, 21);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		tfName = new JTextField();
+		tfName.setBounds(99, 83, 150, 21);
+		contentPane.add(tfName);
+		tfName.setColumns(10);
 		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		textField_1.setBounds(101, 117, 150, 21);
-		contentPane.add(textField_1);
+		tfSubject = new JTextField();
+		tfSubject.setColumns(10);
+		tfSubject.setBounds(101, 117, 150, 21);
+		contentPane.add(tfSubject);
 		
 		JButton btnNewButton = new JButton("Upload");
 		btnNewButton.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Chọn file Excel");
@@ -110,14 +113,12 @@ public class CreateExamGUI extends JFrame {
 
                 // Mở hộp thoại chọn file
                 int result = fileChooser.showOpenDialog(null);
-                
                 // Kiểm tra nếu người dùng chọn file
                 if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
+                	selectedFile = fileChooser.getSelectedFile();
                     textNotification.setText("Đã chọn file: " + selectedFile.getAbsolutePath());
                     System.out.println("Đã chọn file: " + selectedFile.getAbsolutePath());
-                    SendDataToDB sendDataToDB = new SendDataToDB();
-                    sendDataToDB.excel(selectedFile.getAbsolutePath());
+                    
                     // Xử lý file Excel được chọn ở đây
                     // importExamFromExcel(selectedFile.getAbsolutePath());
                 } else {
@@ -125,15 +126,35 @@ public class CreateExamGUI extends JFrame {
                 }
 			}
 		});
-		btnNewButton.setBounds(167, 162, 85, 21);
+		btnNewButton.setBounds(169, 185, 85, 21);
 		contentPane.add(btnNewButton);
 		
 		JButton btnConfirm = new JButton("Confirm");
+		btnConfirm.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SendDataToDB sendDataToDB = new SendDataToDB();
+                sendDataToDB.excel(tfName.getText(), tfSubject.getText() ,selectedFile.getAbsolutePath());
+			}
+		});
 		btnConfirm.setBounds(256, 264, 85, 21);
 		contentPane.add(btnConfirm);
 		
 		textNotification = new JLabel("New label");
-		textNotification.setBounds(99, 197, 150, 13);
+		textNotification.setBounds(100, 217, 150, 13);
 		contentPane.add(textNotification);
+		
+		JButton btnNewButton_1 = new JButton("Create");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SendDataToDB sendDataToDB = new SendDataToDB();
+				String username_TF = name;
+				System.out.println(username_TF);
+				String classId = (String) comboBox.getSelectedItem();
+				sendDataToDB.createBaiThi(username_TF, tfName.getText(), tfSubject.getText(), classId);
+	            JOptionPane.showMessageDialog(null, "successful");
+			}
+		});
+		btnNewButton_1.setBounds(163, 151, 85, 21);
+		contentPane.add(btnNewButton_1);
 	}
 }

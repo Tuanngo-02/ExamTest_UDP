@@ -12,7 +12,45 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 public class SendDataToDB {
-	public void excel(String url) {
+	public void createBaiThi (String username,String nameExam, String subject, String classID) {
+		Thread thread = new Thread(() -> {
+			DatagramSocket clientSocket=null;
+			try {
+				
+				//Gửi yêu cầu đến server
+				clientSocket = new DatagramSocket();
+		        InetAddress serverAddress = InetAddress.getByName("localhost");
+		        String message = "BAITHI:." + username+":."+nameExam+":."+subject+":."+classID;
+		        System.out.println(message);
+		        byte[] sendData = message.getBytes();
+		        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
+		        clientSocket.send(sendPacket);
+		       
+		        // Nhận phản hồi từ server
+                byte[] receiveData = new byte[1024];
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                clientSocket.receive(receivePacket);
+                String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                clientSocket.close();
+
+                // Gọi callback để gửi response
+//                callback.onResponseReceived(response);
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("Lỗi khi kiểm tra đăng ký123: " + e.getMessage());
+			}
+			finally {
+	            // Đảm bảo đóng socket trong finally block
+	            if (clientSocket != null && !clientSocket.isClosed()) {
+	                clientSocket.close();
+	            }
+	        }
+		});
+
+        thread.start();
+	}
+	public void excel(String nameExam, String subject, String url) {
 		try (FileInputStream fis = new FileInputStream(new File(url));
 				XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
 
@@ -32,6 +70,7 @@ public class SendDataToDB {
 	                } else if (cell.getCellType() == CellType.STRING) {
 	                    correctAnswer = cell.getStringCellValue();
 	                }
+	                sendDataQuestionToDB(nameExam,questionOrder, questionText, options, correctAnswer);
 		            System.out.println(questionOrder+ questionText + options + correctAnswer);
 	            }
 
@@ -40,7 +79,7 @@ public class SendDataToDB {
 				System.out.println("Lỗi khi kiểm tra đăng ký123: " + e.getMessage());
 			}
 	}
-	public void sendDataQuestionToDB (String url, String username,String password,String fullname,String role,String email,String classs,ResponseCallback callback) {
+	public void sendDataQuestionToDB (String nameExam, int questionOrder, String questionText, String options, String correctAnswer) {
 		Thread thread = new Thread(() -> {
 			DatagramSocket clientSocket=null;
 			try {
@@ -48,7 +87,7 @@ public class SendDataToDB {
 				//Gửi yêu cầu đến server
 				clientSocket = new DatagramSocket();
 		        InetAddress serverAddress = InetAddress.getByName("localhost");
-		        String message = "REGISTER:." + username+":."+password+":."+role+":."+fullname+":."+email+":."+classs;
+		        String message = "QUESTION:." +nameExam+":."+questionOrder+":."+questionText+":."+options+":."+correctAnswer;
 		        System.out.println(message);
 		        byte[] sendData = message.getBytes();
 		        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
@@ -62,7 +101,7 @@ public class SendDataToDB {
                 clientSocket.close();
 
                 // Gọi callback để gửi response
-                callback.onResponseReceived(response);
+//                callback.onResponseReceived(response);
 				
 			} catch (Exception e) {
 				// TODO: handle exception

@@ -30,7 +30,7 @@ public class TeacherGUI extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					TeacherGUI frame = new TeacherGUI();
+					TeacherGUI frame = new TeacherGUI(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -42,12 +42,11 @@ public class TeacherGUI extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public TeacherGUI() {
+	public TeacherGUI(String name) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 868, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
@@ -72,7 +71,7 @@ public class TeacherGUI extends JFrame {
 		JButton btnNewButton_1 = new JButton("CREATE NEW TEST");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateExamGUI createExamGUI = new CreateExamGUI();
+				CreateExamGUI createExamGUI = new CreateExamGUI(name);
 				createExamGUI.setVisible(true);
                 dispose();
 			}
