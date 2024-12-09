@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Server {
@@ -51,6 +52,22 @@ public class Server {
 			System.out.println(String.join(";", lop));
 		    return String.join(";", lop); // Trả về dữ liệu dưới dạng chuỗi
 		}
+		case "GET_BAITHI":
+		{
+			String username = requestParts[1];
+			ServerGetData serverGetData = new ServerGetData();
+			List<String> baithi  =  serverGetData.getBaiThiByLop(username);
+			System.out.println("sđ"+String.join(";", baithi));
+		    return String.join(";", baithi); // Trả về dữ liệu dưới dạng chuỗi
+		}
+		case "GET_CAUHOI":
+		{
+			String tenbaithi = requestParts[1];
+			ServerGetData serverGetData = new ServerGetData();
+			List<String> baithi  =  serverGetData.getCauHoiByBaiThi(tenbaithi);
+			System.out.println("ssdsdfsdf"+String.join(";", baithi));
+		    return String.join(";", baithi); // Trả về dữ liệu dưới dạng chuỗi
+		}
 		case "QUESTION":
 		{
 			String nameExam = requestParts[1];
@@ -81,6 +98,25 @@ public class Server {
 //            } else {
 //                return "Insufficient data for QUESTION request";
 //            }
+		}
+		case "RESULT":
+		{
+	        String extractedPart = request.split(":\\.")[1].trim();
+	        String username = request.split(":\\.")[2].trim();
+	        String nameExam = request.split(":\\.")[3].trim();
+	        // Loại bỏ dấu ngoặc vuông đầu và cuối
+	        extractedPart = extractedPart.substring(1, extractedPart.length() - 1);
+
+	        // Tách thành từng phần tử dựa trên dấu ","
+	        String[] pairs = extractedPart.split(", ");
+
+	        // Tạo danh sách lưu kết quả
+	        List<String> values = new ArrayList<>();
+	        for (String pair : pairs) {
+	            values.add(pair);
+	        }
+	        ServerSaveData serverSaveData = new ServerSaveData();
+	        return serverSaveData.examCorrected(values, username, nameExam);
 		}
 		case "REGISTER":
 			if (requestParts.length >= 7) {

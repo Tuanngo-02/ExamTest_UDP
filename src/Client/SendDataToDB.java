@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -103,6 +104,43 @@ public class SendDataToDB {
                 // Gọi callback để gửi response
 //                callback.onResponseReceived(response);
 				
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("Lỗi khi kiểm tra đăng ký123: " + e.getMessage());
+			}
+			finally {
+	            // Đảm bảo đóng socket trong finally block
+	            if (clientSocket != null && !clientSocket.isClosed()) {
+	                clientSocket.close();
+	            }
+	        }
+		});
+
+        thread.start();
+	}
+	public void sendDataResultToDB (List<String> result,String username, String tenbaithi, ResponseCallback callback) {
+		Thread thread = new Thread(() -> {
+			DatagramSocket clientSocket=null;
+			try {
+				
+				//Gửi yêu cầu đến server
+				clientSocket = new DatagramSocket();
+		        InetAddress serverAddress = InetAddress.getByName("localhost");
+		        String message = "RESULT:." +result+":."+username+":."+tenbaithi;
+		        System.out.println(message);
+		        byte[] sendData = message.getBytes();
+		        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
+		        clientSocket.send(sendPacket);
+		       
+		        // Nhận phản hồi từ server
+                byte[] receiveData = new byte[1024];
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                clientSocket.receive(receivePacket);
+                String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                clientSocket.close();
+
+                // Gọi callback để gửi response
+                callback.onResponseReceived(response);
 			} catch (Exception e) {
 				// TODO: handle exception
 				System.out.println("Lỗi khi kiểm tra đăng ký123: " + e.getMessage());

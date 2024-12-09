@@ -11,6 +11,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerSaveData {
 	String urldb = "jdbc:mysql://localhost:3306/test_online"; // URL cơ sở dữ liệu
@@ -141,6 +143,100 @@ public class ServerSaveData {
             System.out.println("Lỗi khi lưu câu hỏi: " + e.getMessage());
         }
     }
+    public String examCorrected (List<String> results, String username, String nameExam) {
+   	 // Lấy danh sách câu hỏi và đáp án đúng từ cơ sở dữ liệu
+       List<String[]> cauhoiList = new ArrayList<>();
+       String query = "SELECT cauhoiso, dapandung FROM cauhoi";
+       String queryGetUserId = "SELECT id FROM sinhvien WHERE username = ?";
+       String queryGetExamId = "SELECT id FROM baithi WHERE tenbaithi = ?";
+       String queryInsertThongKe = "INSERT INTO thongke (id_sinhvien, id_baithi, diem) VALUES (?, ?, ?)";
+
+       int userId = -1; // ID của sinh viên
+       int examId = -1; // ID của bài thi
+
+       try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery()) {
+
+           while (rs.next()) {
+               String cauhoiso = rs.getString("cauhoiso").trim();
+               String dapandung = rs.getString("dapandung").trim();
+               cauhoiList.add(new String[]{cauhoiso, dapandung});
+           }
+       } catch (SQLException e) {
+           System.out.println("Error retrieving questions: " + e.getMessage());
+       }
+    // Lấy userId từ username
+       try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
+            PreparedStatement pstmtUser = conn.prepareStatement(queryGetUserId)) {
+
+           pstmtUser.setString(1, username);
+           try (ResultSet rsUser = pstmtUser.executeQuery()) {
+               if (rsUser.next()) {
+                   userId = rsUser.getInt("id");
+               }
+           }
+
+       } catch (SQLException e) {
+           System.out.println("Error retrieving user ID: " + e.getMessage());
+       }
+
+       // Lấy examId từ nameExam
+       try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
+            PreparedStatement pstmtExam = conn.prepareStatement(queryGetExamId)) {
+
+           pstmtExam.setString(1, nameExam);
+           try (ResultSet rsExam = pstmtExam.executeQuery()) {
+               if (rsExam.next()) {
+                   examId = rsExam.getInt("id");
+               }
+           }
+
+       } catch (SQLException e) {
+           System.out.println("Error retrieving exam ID: " + e.getMessage());
+       }
+       int correctCount = 0;
+
+       // So sánh kết quả của người dùng với đáp án đúng
+       for (String result : results) {
+           // Tách số câu hỏi và đáp án
+           String[] parts = result.split(": ");
+           if (parts.length != 2) continue;
+
+           String questionNumber = parts[0].replace("Câu ", "").trim();
+           String selectedAnswer = parts[1].trim();
+
+           // Kiểm tra đáp án đúng
+           for (String[] cauhoi : cauhoiList) {
+           	 if (cauhoi[1].equalsIgnoreCase(selectedAnswer)) { // So sánh đáp án đúng
+                    correctCount++;
+                }
+           }
+       }
+
+       // Tính điểm
+       int totalQuestions = cauhoiList.size();
+       int score = (int) (((double) correctCount / totalQuestions) * 100);
+       
+       // Hiển thị kết quả
+       System.out.println("Bạn đã trả lời đúng " + correctCount + " câu trên tổng số " + totalQuestions + " câu.");
+       System.out.println("Điểm của bạn: " + score);
+       
+    // Chèn kết quả vào bảng thongke
+       try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
+            PreparedStatement pstmtInsert = conn.prepareStatement(queryInsertThongKe)) {
+
+           pstmtInsert.setInt(1, userId);
+           pstmtInsert.setInt(2, examId);
+           pstmtInsert.setInt(3, score);
+           pstmtInsert.executeUpdate();
+
+       } catch (SQLException e) {
+           System.out.println("Error inserting result into thongke: " + e.getMessage());
+       }
+       return "Bạn đã trả lời đúng " + correctCount + " câu trên tổng số " + totalQuestions + " câu.\n" + "Điểm của bạn: " + score ;
+   }
+
 
 
 }
