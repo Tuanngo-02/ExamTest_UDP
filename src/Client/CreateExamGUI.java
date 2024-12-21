@@ -16,16 +16,20 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.awt.event.ActionEvent;
+import java.awt.Font;
 
 public class CreateExamGUI extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField tfName;
-	private JTextField tfSubject;
+	private JTextField tfSecond;
 	private JComboBox<String> comboBox;
 	private JLabel textNotification;
 	private File selectedFile;
+	private JTextField tfSubject;
+	private JTextField tfMinute;
+	private JTextField tfHour;
 
 	/**
 	 * Launch the application.
@@ -48,19 +52,19 @@ public class CreateExamGUI extends JFrame {
 	 */
 	public CreateExamGUI(String name) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 499, 332);
+		setBounds(100, 100, 361, 332);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Create new exam");
-		lblNewLabel.setBounds(20, 10, 143, 24);
+		JLabel lblNewLabel = new JLabel("CREATE NEW EXAM");
+		lblNewLabel.setBounds(20, 10, 186, 24);
 		contentPane.add(lblNewLabel);
 		
 		comboBox = new JComboBox<>();
-		comboBox.setBounds(101, 44, 148, 21);
+		comboBox.setBounds(101, 44, 213, 21);
 		GetData getData = new GetData();
         List<String> classes = getData.getAllClass();
         
@@ -86,19 +90,20 @@ public class CreateExamGUI extends JFrame {
 		lblSubject.setBounds(20, 114, 81, 24);
 		contentPane.add(lblSubject);
 		
-		JLabel lblSelectClass_1_1_1 = new JLabel("fileTest");
-		lblSelectClass_1_1_1.setBounds(20, 181, 81, 24);
+		JLabel lblSelectClass_1_1_1 = new JLabel("File Exam (Excel)");
+		lblSelectClass_1_1_1.setBounds(20, 207, 81, 24);
 		contentPane.add(lblSelectClass_1_1_1);
 		
 		tfName = new JTextField();
-		tfName.setBounds(99, 83, 150, 21);
+		tfName.setBounds(101, 83, 213, 21);
 		contentPane.add(tfName);
 		tfName.setColumns(10);
 		
-		tfSubject = new JTextField();
-		tfSubject.setColumns(10);
-		tfSubject.setBounds(101, 117, 150, 21);
-		contentPane.add(tfSubject);
+		tfSecond = new JTextField();
+		tfSecond.setText("00");
+		tfSecond.setColumns(10);
+		tfSecond.setBounds(245, 147, 65, 21);
+		contentPane.add(tfSecond);
 		
 		JButton btnNewButton = new JButton("Upload");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -126,7 +131,7 @@ public class CreateExamGUI extends JFrame {
                 }
 			}
 		});
-		btnNewButton.setBounds(169, 185, 85, 21);
+		btnNewButton.setBounds(229, 209, 85, 21);
 		contentPane.add(btnNewButton);
 		
 		JButton btnConfirm = new JButton("Confirm");
@@ -136,11 +141,11 @@ public class CreateExamGUI extends JFrame {
                 sendDataToDB.excel(tfName.getText(), tfSubject.getText() ,selectedFile.getAbsolutePath());
 			}
 		});
-		btnConfirm.setBounds(256, 264, 85, 21);
+		btnConfirm.setBounds(229, 264, 85, 21);
 		contentPane.add(btnConfirm);
 		
 		textNotification = new JLabel("New label");
-		textNotification.setBounds(100, 217, 150, 13);
+		textNotification.setBounds(164, 241, 150, 13);
 		contentPane.add(textNotification);
 		
 		JButton btnNewButton_1 = new JButton("Create");
@@ -148,13 +153,47 @@ public class CreateExamGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				SendDataToDB sendDataToDB = new SendDataToDB();
 				String username_TF = name;
-				System.out.println(username_TF);
 				String classId = (String) comboBox.getSelectedItem();
-				sendDataToDB.createBaiThi(username_TF, tfName.getText(), tfSubject.getText(), classId);
+				String timeExam = tfHour.getText() + ":" + tfMinute.getText() + ":" + tfSecond.getText();
+				sendDataToDB.createBaiThi(username_TF, tfName.getText(), tfSubject.getText(), timeExam, classId);
 	            JOptionPane.showMessageDialog(null, "successful");
 			}
 		});
-		btnNewButton_1.setBounds(163, 151, 85, 21);
+		btnNewButton_1.setBounds(229, 178, 85, 21);
 		contentPane.add(btnNewButton_1);
+		
+		JLabel lblSelectClass_1_1_2 = new JLabel("");
+		lblSelectClass_1_1_2.setBounds(20, 114, 81, 24);
+		contentPane.add(lblSelectClass_1_1_2);
+		
+		tfSubject = new JTextField();
+		tfSubject.setColumns(10);
+		tfSubject.setBounds(101, 117, 213, 21);
+		contentPane.add(tfSubject);
+		
+		JLabel lblTime = new JLabel("Time");
+		lblTime.setBounds(20, 144, 81, 24);
+		contentPane.add(lblTime);
+		
+		tfMinute = new JTextField();
+		tfMinute.setText("00");
+		tfMinute.setColumns(10);
+		tfMinute.setBounds(158, 147, 65, 21);
+		contentPane.add(tfMinute);
+		
+		tfHour = new JTextField();
+		tfHour.setColumns(10);
+		tfHour.setBounds(111, 147, 24, 21);
+		contentPane.add(tfHour);
+		
+		JLabel lblNewLabel_1 = new JLabel(":");
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblNewLabel_1.setBounds(145, 147, 12, 17);
+		contentPane.add(lblNewLabel_1);
+		
+		JLabel lblNewLabel_1_1 = new JLabel(":");
+		lblNewLabel_1_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblNewLabel_1_1.setBounds(229, 147, 12, 17);
+		contentPane.add(lblNewLabel_1_1);
 	}
 }

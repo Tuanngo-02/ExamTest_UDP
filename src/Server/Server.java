@@ -52,12 +52,20 @@ public class Server {
 			System.out.println(String.join(";", lop));
 		    return String.join(";", lop); // Trả về dữ liệu dưới dạng chuỗi
 		}
+		case "GET_SINHVIEN":
+		{
+			String username = requestParts[1];
+			ServerGetData serverGetData = new ServerGetData();
+			List<String> sinhvien  =  serverGetData.getSinhVienByUserName(username);
+			System.out.println("chuoi"+String.join(";", sinhvien));
+		    return String.join(";", sinhvien); // Trả về dữ liệu dưới dạng chuỗi
+		}
 		case "GET_BAITHI":
 		{
 			String username = requestParts[1];
 			ServerGetData serverGetData = new ServerGetData();
 			List<String> baithi  =  serverGetData.getBaiThiByLop(username);
-			System.out.println("sđ"+String.join(";", baithi));
+			System.out.println("chuoi"+String.join(";", baithi));
 		    return String.join(";", baithi); // Trả về dữ liệu dưới dạng chuỗi
 		}
 		case "GET_CAUHOI":
@@ -67,6 +75,14 @@ public class Server {
 			List<String> baithi  =  serverGetData.getCauHoiByBaiThi(tenbaithi);
 			System.out.println("ssdsdfsdf"+String.join(";", baithi));
 		    return String.join(";", baithi); // Trả về dữ liệu dưới dạng chuỗi
+		}
+		case "GET_THONGKE":
+		{
+			String username = requestParts[1];
+			ServerGetData serverGetData = new ServerGetData();
+			List<String> thongke  =  serverGetData.getThongKeByUserName(username);
+			System.out.println("ssdsdfsdf"+String.join(";", thongke));
+		    return String.join(";", thongke); // Trả về dữ liệu dưới dạng chuỗi
 		}
 		case "QUESTION":
 		{
@@ -90,20 +106,30 @@ public class Server {
             String name = requestParts[2];
             String subject = requestParts[3];
             String classID = requestParts[4];
+            
+            String[] parts = request.split(":\\.");
+            String time = parts[parts.length - 1]; 
+            System.out.println("Thời gian: " + time);
+  
             ServerSaveData saveData = new ServerSaveData();
-            saveData.saveBaiThi(username,name, subject, classID);
+            saveData.saveBaiThi(username,name, subject,time, classID);
 //			if (requestParts.length >= 2) {
 //                
 ////                System.out.println(username);
 //            } else {
 //                return "Insufficient data for QUESTION request";
-//            }
+//            
+            break;
 		}
 		case "RESULT":
 		{
 	        String extractedPart = request.split(":\\.")[1].trim();
 	        String username = request.split(":\\.")[2].trim();
 	        String nameExam = request.split(":\\.")[3].trim();
+	        String[] parts = request.split(":\\.");
+	        String time = parts[parts.length - 1];
+
+	        System.out.println(time);
 	        // Loại bỏ dấu ngoặc vuông đầu và cuối
 	        extractedPart = extractedPart.substring(1, extractedPart.length() - 1);
 
@@ -116,7 +142,7 @@ public class Server {
 	            values.add(pair);
 	        }
 	        ServerSaveData serverSaveData = new ServerSaveData();
-	        return serverSaveData.examCorrected(values, username, nameExam);
+	        return serverSaveData.examCorrected(values, username, nameExam,time);
 		}
 		case "REGISTER":
 			if (requestParts.length >= 7) {

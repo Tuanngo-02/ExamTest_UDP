@@ -13,7 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 public class SendDataToDB {
-	public void createBaiThi (String username,String nameExam, String subject, String classID) {
+	public void createBaiThi (String username,String nameExam, String subject, String timeExam, String classID) {
 		Thread thread = new Thread(() -> {
 			DatagramSocket clientSocket=null;
 			try {
@@ -21,7 +21,7 @@ public class SendDataToDB {
 				//Gửi yêu cầu đến server
 				clientSocket = new DatagramSocket();
 		        InetAddress serverAddress = InetAddress.getByName("localhost");
-		        String message = "BAITHI:." + username+":."+nameExam+":."+subject+":."+classID;
+		        String message = "BAITHI:." + username+":."+nameExam+":."+subject+":."+classID+":."+timeExam;
 		        System.out.println(message);
 		        byte[] sendData = message.getBytes();
 		        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
@@ -118,7 +118,7 @@ public class SendDataToDB {
 
         thread.start();
 	}
-	public void sendDataResultToDB (List<String> result,String username, String tenbaithi, ResponseCallback callback) {
+	public void sendDataResultToDB (List<String> result,String time,String username, String tenbaithi, ResponseCallback callback) {
 		Thread thread = new Thread(() -> {
 			DatagramSocket clientSocket=null;
 			try {
@@ -126,7 +126,7 @@ public class SendDataToDB {
 				//Gửi yêu cầu đến server
 				clientSocket = new DatagramSocket();
 		        InetAddress serverAddress = InetAddress.getByName("localhost");
-		        String message = "RESULT:." +result+":."+username+":."+tenbaithi;
+		        String message = "RESULT:." +result+":."+username+":."+tenbaithi+":."+time;
 		        System.out.println(message);
 		        byte[] sendData = message.getBytes();
 		        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);

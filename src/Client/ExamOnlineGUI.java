@@ -18,6 +18,7 @@ import java.util.List;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -31,6 +32,10 @@ public class ExamOnlineGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private List<ButtonGroup> buttonGroups; // Lưu các ButtonGroup cho mỗi câu hỏi
+	public JLabel tfTime;
+	private Timer timer;
+	private int totalSeconds;
+	private int remainingSeconds;
 
 	/**
 	 * Launch the application.
@@ -39,7 +44,7 @@ public class ExamOnlineGUI extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ExamOnlineGUI frame = new ExamOnlineGUI("Đề thi mẫu", null);
+					ExamOnlineGUI frame = new ExamOnlineGUI("Đề thi mẫu", null,null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -51,7 +56,7 @@ public class ExamOnlineGUI extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ExamOnlineGUI(String tenbaithi, String username) {
+	public ExamOnlineGUI(String tenbaithi, String username, String timeExam) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 700, 583);
 		contentPane = new JPanel();
@@ -79,10 +84,17 @@ public class ExamOnlineGUI extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				handleSubmit(username, tenbaithi);
+				if (timer != null) {
+	                timer.stop(); // Dừng đếm ngược nếu người dùng nhấn Submit
+	            }
 			}
 		});
 		btnNewButton.setBounds(591, 512, 85, 21);
 		contentPane.add(btnNewButton);
+		
+		tfTime = new JLabel("New label");
+		tfTime.setBounds(548, 5, 133, 21);
+		contentPane.add(tfTime);
 
 		// Khởi tạo danh sách ButtonGroup
 		buttonGroups = new ArrayList<>();
@@ -143,10 +155,42 @@ public class ExamOnlineGUI extends JFrame {
 
 			questionsPanel.add(questionPanel);
 		}
+		// Bắt đầu đếm ngược
+        String[] timeParts = timeExam.split(":");
+        int hours = Integer.parseInt(timeParts[0]);
+        int minutes = Integer.parseInt(timeParts[1]);
+        int seconds = Integer.parseInt(timeParts[2]);
+        startCountdown(tfTime, hours, minutes, seconds, username, tenbaithi);
 	}
+    public void startCountdown(JLabel label, int hours, int minutes, int seconds, String username, String tenbaithi) {
+        totalSeconds = hours * 3600 + minutes * 60 + seconds;
+        remainingSeconds = totalSeconds;
 
+        timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (remainingSeconds <= 0) {
+                    ((Timer) e.getSource()).stop();
+                    label.setText("Time's up!");
+                    handleSubmit(username, tenbaithi); // Tự động submit khi hết giờ
+                } else {
+                    remainingSeconds--;
+                    int h = remainingSeconds / 3600;
+                    int m = (remainingSeconds % 3600) / 60;
+                    int s = remainingSeconds % 60;
+                    label.setText(String.format("%02d:%02d:%02d", h, m, s));
+                }
+            }
+        });
+
+        timer.start();
+    }
 	// Hàm xử lý khi nhấn nút Submit
 	private void handleSubmit(String username, String tenbaithi) {
+		int timeUsed = totalSeconds - remainingSeconds; // Thời gian đã làm bài
+        int usedHours = timeUsed / 3600;
+        int usedMinutes = (timeUsed % 3600) / 60;
+        int usedSeconds = timeUsed % 60;
 		List<String> results = new ArrayList<>();
 
 		for (int i = 0; i < buttonGroups.size(); i++) {
@@ -158,21 +202,16 @@ public class ExamOnlineGUI extends JFrame {
 				}
 			}
 		}
-		
+		String time = String.format("%02d:%02d:%02d", usedHours, usedMinutes, usedSeconds);
+		System.out.println(time);
 		SendDataToDB sendDataToDB = new SendDataToDB();
-		sendDataToDB.sendDataResultToDB(results,username, tenbaithi,response -> {
+		sendDataToDB.sendDataResultToDB(results,time,username, tenbaithi,response -> {
 			if (results.isEmpty()) {
 				JOptionPane.showMessageDialog(this, "Bạn chưa chọn đáp án nào!", "Thông báo", JOptionPane.WARNING_MESSAGE);
 			} else {
-				JOptionPane.showMessageDialog(this, response, "Kết quả", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this, response + "\nThời gian làm bài: " +
+                        String.format("%02d:%02d:%02d", usedHours, usedMinutes, usedSeconds), "Kết quả", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
-
-//		// Hiển thị kết quả
-//		if (results.isEmpty()) {
-//			JOptionPane.showMessageDialog(this, "Bạn chưa chọn đáp án nào!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-//		} else {
-//			JOptionPane.showMessageDialog(this, String.join("\n", results), "Kết quả", JOptionPane.INFORMATION_MESSAGE);
-//		}
 	}
 }

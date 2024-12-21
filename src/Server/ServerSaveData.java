@@ -11,6 +11,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,10 +50,10 @@ public class ServerSaveData {
             e.printStackTrace();
         }
     }
-    public void saveBaiThi(String username, String nameExam, String subject, String classID) {
+    public void saveBaiThi(String username, String nameExam, String subject, String timeExam, String classID) {
         String selectQuery = "SELECT id FROM giangvien WHERE username = ?";
         String selectQuery_2 = "SELECT id FROM lop WHERE lop = ?";
-        String insertQuery = "INSERT INTO baithi (id_giangvien, tenbaithi, monhoc, id_lop) VALUES (?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO baithi (id_giangvien, tenbaithi, monhoc, thoigian, id_lop) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb)) {
             // Tìm id trong bảng giangvien
@@ -64,7 +66,6 @@ public class ServerSaveData {
                     }
                 }
             }
-
             // Tìm id trong bảng lop
             int classsssId = -1;
             try (PreparedStatement selectStmt = conn.prepareStatement(selectQuery_2)) {
@@ -91,7 +92,8 @@ public class ServerSaveData {
                 insertStmt.setInt(1, giangVienId);
                 insertStmt.setString(2, nameExam);
                 insertStmt.setString(3, subject);
-                insertStmt.setInt(4, classsssId);
+                insertStmt.setString(4, timeExam);
+                insertStmt.setInt(5, classsssId);
                 insertStmt.executeUpdate();
                 System.out.println("Bài thi được lưu thành công!");
             }
@@ -143,29 +145,16 @@ public class ServerSaveData {
             System.out.println("Lỗi khi lưu câu hỏi: " + e.getMessage());
         }
     }
-    public String examCorrected (List<String> results, String username, String nameExam) {
+    public String examCorrected (List<String> results, String username, String nameExam, String time) {
    	 // Lấy danh sách câu hỏi và đáp án đúng từ cơ sở dữ liệu
        List<String[]> cauhoiList = new ArrayList<>();
-       String query = "SELECT cauhoiso, dapandung FROM cauhoi";
+       String query = "SELECT cauhoiso, dapandung FROM cauhoi WHERE id_baithi = ?";
        String queryGetUserId = "SELECT id FROM sinhvien WHERE username = ?";
        String queryGetExamId = "SELECT id FROM baithi WHERE tenbaithi = ?";
-       String queryInsertThongKe = "INSERT INTO thongke (id_sinhvien, id_baithi, diem) VALUES (?, ?, ?)";
+       String queryInsertThongKe = "INSERT INTO thongke (id_sinhvien, id_baithi, diem, thoigianlambai, ngaylam) VALUES (?, ?, ?, ?, ?)";
 
        int userId = -1; // ID của sinh viên
        int examId = -1; // ID của bài thi
-
-       try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            ResultSet rs = pstmt.executeQuery()) {
-
-           while (rs.next()) {
-               String cauhoiso = rs.getString("cauhoiso").trim();
-               String dapandung = rs.getString("dapandung").trim();
-               cauhoiList.add(new String[]{cauhoiso, dapandung});
-           }
-       } catch (SQLException e) {
-           System.out.println("Error retrieving questions: " + e.getMessage());
-       }
     // Lấy userId từ username
        try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
             PreparedStatement pstmtUser = conn.prepareStatement(queryGetUserId)) {
@@ -195,6 +184,26 @@ public class ServerSaveData {
        } catch (SQLException e) {
            System.out.println("Error retrieving exam ID: " + e.getMessage());
        }
+       
+       try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
+    		     PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+    		    // Thiết lập giá trị tham số cho câu lệnh SQL
+    		    pstmt.setInt(1, examId);
+
+    		    // Thực thi truy vấn và lấy kết quả
+    		    try (ResultSet rs = pstmt.executeQuery()) {
+    		        while (rs.next()) {
+    		            String cauhoiso = rs.getString("cauhoiso").trim();
+    		            String dapandung = rs.getString("dapandung").trim();
+    		            cauhoiList.add(new String[]{cauhoiso, dapandung});
+    		        }
+    		    }
+
+    		} catch (SQLException e) {
+    		    System.out.println("Error retrieving questions: " + e.getMessage());
+    		}
+       
        int correctCount = 0;
 
        // So sánh kết quả của người dùng với đáp án đúng
@@ -222,6 +231,12 @@ public class ServerSaveData {
        System.out.println("Bạn đã trả lời đúng " + correctCount + " câu trên tổng số " + totalQuestions + " câu.");
        System.out.println("Điểm của bạn: " + score);
        
+    // Lấy ngày hiện tại
+       LocalDate currentDate = LocalDate.now();
+       // Định dạng ngày thành chuỗi
+       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+       String dateAsString = currentDate.format(formatter);
+       
     // Chèn kết quả vào bảng thongke
        try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
             PreparedStatement pstmtInsert = conn.prepareStatement(queryInsertThongKe)) {
@@ -229,6 +244,8 @@ public class ServerSaveData {
            pstmtInsert.setInt(1, userId);
            pstmtInsert.setInt(2, examId);
            pstmtInsert.setInt(3, score);
+           pstmtInsert.setString(4, time);
+           pstmtInsert.setString(5, dateAsString);
            pstmtInsert.executeUpdate();
 
        } catch (SQLException e) {

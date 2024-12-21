@@ -63,6 +63,37 @@ public class ServerGetData {
 
         return giangVienInfo;
     }
+    public List<String> getSinhVienByUserName(String username) {
+        String query = "SELECT * FROM sinhvien WHERE username = ?";
+        List<String> sinhvienInfo = new ArrayList<>();
+
+        try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            // Thiết lập giá trị cho tham số trong câu truy vấn
+            pstmt.setString(1, username);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    // Lấy tất cả các thông tin cần thiết từ bảng
+                    int id = rs.getInt("id");
+                    String ten = rs.getString("fullname");
+                    String email = rs.getString("email");
+                    String lop = rs.getString("class"); // hoặc bất kỳ cột nào khác
+
+                    // Ghép thông tin lại thành một chuỗi
+                    String info = id+"-"+ten+"-"+email+"-"+lop;
+                    sinhvienInfo.add(info);
+                }
+            }
+
+            System.out.println("Sinhvien information retrieved successfully.");
+        } catch (SQLException e) {
+            System.out.println("Error retrieving GiangVien information: " + e.getMessage());
+        }
+
+        return sinhvienInfo;
+    }
     public List<String> getBaiThiByLop(String name) {
         // Kết quả lưu danh sách bài thi
         List<String> baiThiList = new ArrayList<>();
@@ -117,8 +148,9 @@ public class ServerGetData {
                 try (ResultSet rs3 = pstmt3.executeQuery()) {
                     while (rs3.next()) {
                         String tenbaiThi = rs3.getString("tenbaithi");
+                        String timeExam = rs3.getString("thoigian");
 //                        String monhoc = rs3.getString("monhoc");
-                        baiThiList.add(tenbaiThi);
+                        baiThiList.add(tenbaiThi+"-"+timeExam);
                     }
                 }
             }
@@ -132,7 +164,7 @@ public class ServerGetData {
     }
     public List<String> getCauHoiByBaiThi(String tenBaiThi) {
         // Câu truy vấn lấy id_baithi từ bảng baithi
-        String queryBaiThi = "SELECT id FROM baithi WHERE tenbaithi = ?";
+        String queryBaiThi = "SELECT * FROM baithi WHERE tenbaithi = ?";
         // Câu truy vấn lấy danh sách câu hỏi từ bảng cauhoi
         String queryCauHoi = "SELECT * FROM cauhoi WHERE id_baithi = ?";
         
@@ -147,7 +179,7 @@ public class ServerGetData {
             try (ResultSet rsBaiThi = pstmtBaiThi.executeQuery()) {
                 if (rsBaiThi.next()) {
                     int idBaiThi = rsBaiThi.getInt("id");
-
+             
                     // Thực hiện truy vấn bảng cauhoi để lấy danh sách câu hỏi
                     try (PreparedStatement pstmtCauHoi = conn.prepareStatement(queryCauHoi)) {
                         pstmtCauHoi.setInt(1, idBaiThi);
@@ -175,6 +207,63 @@ public class ServerGetData {
         }
 
         return danhSachCauHoi;
+    }
+    public List<String> getThongKeByUserName(String name) {
+        String querysinhvien = "SELECT * FROM sinhvien WHERE username = ?";
+        
+        String querythongke = "SELECT * FROM thongke WHERE id_sinhvien = ?";
+        
+        String queryBaiThi = "SELECT * FROM baithi WHERE id = ?";
+        
+        List<String> thongke = new ArrayList<>();
+
+        try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
+             PreparedStatement pstmtsinhvien = conn.prepareStatement(querysinhvien)) {
+             
+            // Thiết lập giá trị cho tham số trong câu truy vấn bảng baithi
+        	pstmtsinhvien.setString(1, name);
+
+            try (ResultSet rsSinhVien = pstmtsinhvien.executeQuery()) {
+                if (rsSinhVien.next()) {
+                    int id_sinhvien = rsSinhVien.getInt("id");
+             
+                    // Thực hiện truy vấn bảng cauhoi để lấy danh sách câu hỏi
+                    try (PreparedStatement pstmtThongKe = conn.prepareStatement(querythongke)) {
+                    	pstmtThongKe.setInt(1, id_sinhvien);
+
+                        try (ResultSet rsThongKe = pstmtThongKe.executeQuery()) {
+                            while (rsThongKe.next()) {
+                                int id_baithi   = rsThongKe.getInt("id_baithi");
+                                String thoigianlambai = rsThongKe.getString("thoigianlambai");
+                                String ngaylam = rsThongKe.getString("ngaylam");
+                                int diem = rsThongKe.getInt("diem");
+                                
+                             // Lấy tên bài thi từ bảng baithi
+                                String tenBaiThi = "";
+                                try (PreparedStatement pstmtBaiThi = conn.prepareStatement(queryBaiThi)) {
+                                    pstmtBaiThi.setInt(1, id_baithi);
+
+                                    try (ResultSet rsBaiThi = pstmtBaiThi.executeQuery()) {
+                                        if (rsBaiThi.next()) {
+                                            tenBaiThi = rsBaiThi.getString("tenbaithi");
+                                        }
+                                    }
+                                }
+                                thongke.add(ngaylam+"-"+tenBaiThi+"-"+diem+"-"+thoigianlambai);
+                            }
+                        }
+                    }
+                } else {
+                    System.out.println("Không tìm thấy bài thi với tên:");
+                }
+            }
+
+            System.out.println("Danh sách thống kê được lấy thành công.");
+        } catch (SQLException e) {
+            System.out.println("Lỗi khi lấy danh sách câu hỏi: " + e.getMessage());
+        }
+
+        return thongke;
     }
     
     
