@@ -91,7 +91,7 @@ public class CreateExamGUI extends JFrame {
 		contentPane.add(lblSubject);
 		
 		JLabel lblSelectClass_1_1_1 = new JLabel("File Exam (Excel)");
-		lblSelectClass_1_1_1.setBounds(20, 207, 81, 24);
+		lblSelectClass_1_1_1.setBounds(20, 207, 156, 24);
 		contentPane.add(lblSelectClass_1_1_1);
 		
 		tfName = new JTextField();
@@ -182,6 +182,7 @@ public class CreateExamGUI extends JFrame {
 		contentPane.add(tfMinute);
 		
 		tfHour = new JTextField();
+		tfHour.setText("00");
 		tfHour.setColumns(10);
 		tfHour.setBounds(111, 147, 24, 21);
 		contentPane.add(tfHour);

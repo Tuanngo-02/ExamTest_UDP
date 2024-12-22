@@ -144,6 +144,20 @@ public class Server {
 	        ServerSaveData serverSaveData = new ServerSaveData();
 	        return serverSaveData.examCorrected(values, username, nameExam,time);
 		}
+		case "STATISTICAL":
+		{
+	        ServerGetData serverGetData = new ServerGetData();
+	        List<String> thongke =  serverGetData.getListThongKe();
+	        System.out.println("ssdsdfsdf"+String.join(";", thongke));
+		    return String.join(";", thongke);
+		}
+		case "STATISTICAL_SCORE":
+		{
+	        ServerGetData serverGetData = new ServerGetData();
+	        List<String> thongke =  serverGetData.getListThongKeDiemThi();
+	        System.out.println("ssdsdfsdf"+String.join(";", thongke));
+		    return String.join(";", thongke);
+		}
 		case "REGISTER":
 			if (requestParts.length >= 7) {
                 String username = requestParts[1];

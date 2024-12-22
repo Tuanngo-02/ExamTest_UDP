@@ -87,5 +87,15 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="D:/DOWNLOADS_2/xmlbeans-3.1.0.jar"/>
+	<classpathentry kind="lib" path="D:/DOWNLOADS_2/jfreechart-1.0.1/lib/jcommon-1.0.0.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/DOWNLOADS_2/jfreechart-1.0.1/lib/jfreechart-1.0.1.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

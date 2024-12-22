@@ -149,8 +149,8 @@ public class ServerGetData {
                     while (rs3.next()) {
                         String tenbaiThi = rs3.getString("tenbaithi");
                         String timeExam = rs3.getString("thoigian");
-//                        String monhoc = rs3.getString("monhoc");
-                        baiThiList.add(tenbaiThi+"-"+timeExam);
+                        String subject = rs3.getString("monhoc");
+                        baiThiList.add(tenbaiThi+"-"+timeExam+"-"+subject);
                     }
                 }
             }
@@ -264,6 +264,42 @@ public class ServerGetData {
         }
 
         return thongke;
+    }
+    public List<String> getListThongKe() {
+        List<String> list = new ArrayList<>();
+        String query = "SELECT ngaylam, COUNT(id_sinhvien) AS so_luong_sinh_vien FROM thongke GROUP BY ngaylam ORDER BY ngaylam";
+
+        try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                String ngayLam = rs.getString("ngaylam");
+                int soLuongHocVien = rs.getInt("so_luong_sinh_vien");
+                list.add(ngayLam+"-"+soLuongHocVien);
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi khi truy vấn dữ liệu thống kê: " + e.getMessage());
+        }
+        return list;
+    }
+    public List<String> getListThongKeDiemThi() {
+        List<String> list = new ArrayList<>();
+        String query = "SELECT diem, COUNT(*) AS so_luong FROM thongke GROUP BY diem ORDER BY diem ASC";
+
+        try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+            	int diem = rs.getInt("diem");
+                int soLuong = rs.getInt("so_luong");
+                list.add(diem+"-"+soLuong);
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi khi truy vấn dữ liệu thống kê: " + e.getMessage());
+        }
+        return list;
     }
     
     

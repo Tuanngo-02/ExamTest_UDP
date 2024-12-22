@@ -9,4 +9,5 @@ module UDPExam {
 	requires java.sql;
 	requires poi;
 	requires poi.ooxml;
+	requires jfreechart;
 }

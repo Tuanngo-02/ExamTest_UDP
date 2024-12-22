@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
 public class StudentGUI extends JFrame {
@@ -84,15 +85,27 @@ public class StudentGUI extends JFrame {
 	    	String[] parts = exam.split("-"); // Tách chuỗi bằng dấu "-"
 	        String examName = parts[0]; 
 	        String timeExam = parts[1];
-	        JButton examButton = new JButton("<html>Name Exam: " + examName + "<br>Time: " + timeExam + "</html>");
+	        String subject = parts[2];
+	        JButton examButton = new JButton("<html>Name Exam: " + examName + "<br>Subject: " + subject +"<br>Time: " + timeExam+ "</html>");
 	        examButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
 	        examButton.setPreferredSize(new Dimension(100, 100)); // Kích thước mỗi ô hình vuông
 
 	        // Thêm sự kiện khi nhấn vào nút
-	        examButton.addActionListener(e -> {
-	            System.out.println("Bấm vào bài thi: " + examName);
-	            ExamOnlineGUI examOnlineGUI = new ExamOnlineGUI(examName, name,timeExam);
-	            examOnlineGUI.setVisible(true);
+	        examButton.addActionListener(e -> {        
+	            int option = JOptionPane.showConfirmDialog(
+	                null, 
+	                "Are you sure you want to take the test?", 
+	                "Confirm", 
+	                JOptionPane.YES_NO_OPTION
+	            );
+	            if (option == JOptionPane.YES_OPTION) {
+	                System.out.println("Bấm vào bài thi: " + examName);
+	                ExamOnlineGUI examOnlineGUI = new ExamOnlineGUI(examName, name, timeExam);
+	                examOnlineGUI.setVisible(true);
+	            }	           
+	            else {
+	                System.out.println("Không tham gia bài thi.");
+	            }
 	        });
 
 	        // Thêm nút vào gridPanel

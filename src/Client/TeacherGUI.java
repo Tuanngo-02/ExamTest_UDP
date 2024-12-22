@@ -164,6 +164,13 @@ public class TeacherGUI extends JFrame {
 		panel_1.add(btnNewButton_1_1_1_1_2);
 		
 		JButton btnNewButton_1_1_1_2_1 = new JButton("STATISTICAL");
+		btnNewButton_1_1_1_2_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				StatisticalGUI statisticalGUI = new StatisticalGUI();
+				statisticalGUI.setVisible(true);
+                dispose();
+			}
+		});
 		btnNewButton_1_1_1_2_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		btnNewButton_1_1_1_2_1.setBounds(546, 329, 235, 55);
 		panel_1.add(btnNewButton_1_1_1_2_1);

@@ -138,4 +138,56 @@ public class GetData {
           }
           return thongke;
     }
+	public List<String> getThongke() {
+        List<String> thongke = new ArrayList<>();
+		  try {
+              DatagramSocket clientSocket = new DatagramSocket();
+              InetAddress serverAddress = InetAddress.getByName("localhost");
+              String message = "STATISTICAL:.";
+              byte[] sendData = message.getBytes();
+              DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
+              clientSocket.send(sendPacket);
+
+              // Nhận phản hồi từ server
+              byte[] receiveData = new byte[1024];
+              DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+              clientSocket.receive(receivePacket);
+              String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+              clientSocket.close();
+              
+              String[] part = response.split(";");
+              for (String thongkee : part) {
+            	  thongke.add(thongkee.trim());  // Thêm từng lớp vào danh sách và loại bỏ khoảng trắng
+              }
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+          return thongke;
+    }
+	public List<String> getThongkeDiemThi() {
+        List<String> thongke = new ArrayList<>();
+		  try {
+              DatagramSocket clientSocket = new DatagramSocket();
+              InetAddress serverAddress = InetAddress.getByName("localhost");
+              String message = "STATISTICAL_SCORE:.";
+              byte[] sendData = message.getBytes();
+              DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
+              clientSocket.send(sendPacket);
+
+              // Nhận phản hồi từ server
+              byte[] receiveData = new byte[1024];
+              DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+              clientSocket.receive(receivePacket);
+              String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+              clientSocket.close();
+              
+              String[] part = response.split(";");
+              for (String thongkee : part) {
+            	  thongke.add(thongkee.trim());  // Thêm từng lớp vào danh sách và loại bỏ khoảng trắng
+              }
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+          return thongke;
+    }
 }

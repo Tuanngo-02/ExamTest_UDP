@@ -203,7 +203,7 @@ public class ExamOnlineGUI extends JFrame {
 			}
 		}
 		String time = String.format("%02d:%02d:%02d", usedHours, usedMinutes, usedSeconds);
-		System.out.println(time);
+		
 		SendDataToDB sendDataToDB = new SendDataToDB();
 		sendDataToDB.sendDataResultToDB(results,time,username, tenbaithi,response -> {
 			if (results.isEmpty()) {
