@@ -36,7 +36,7 @@
   ![My Image](images/test.png)
   ![My Image](images/result.png)
 - Test history interface
-  ![My Image](images/history.png)
+  ![My Image](images/historystudent.png)
 - Teacher interface
   ![My Image](images/teacherTest.png)
   ![My Image](images/teacherStudent.png)
@@ -44,7 +44,7 @@
   ![My Image](images/thongke1.png)
   ![My Image](images/thongke.png)
   
-####LINK DEMO
+#### LINK DEMO
 [![LINK DEMO](https://img.youtube.com/vi/nBCo-Ogp3yA/0.jpg)](https://www.youtube.com/watch?v=nBCo-Ogp3yA)
 
 
