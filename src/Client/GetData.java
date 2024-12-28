@@ -6,18 +6,19 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import Config.Common;
+
 public class GetData {
 	public List<String> getAllClass() {
         List<String> lop = new ArrayList<>();
 		  try {
               DatagramSocket clientSocket = new DatagramSocket();
-              InetAddress serverAddress = InetAddress.getByName("localhost");
+              InetAddress serverAddress = InetAddress.getByName(Common.IPCONFIG.getIpAddress());
               String message = "GET_ALL_CLASS:." + ":.";
               byte[] sendData = message.getBytes();
               DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
               clientSocket.send(sendPacket);
 
-              // Nhận phản hồi từ server
               byte[] receiveData = new byte[1024];
               DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
               clientSocket.receive(receivePacket);
@@ -26,7 +27,7 @@ public class GetData {
 
               String[] classes = response.split(";");
               for (String className : classes) {
-                  lop.add(className.trim());  // Thêm từng lớp vào danh sách và loại bỏ khoảng trắng
+                  lop.add(className.trim());  
               }
           } catch (Exception e) {
               e.printStackTrace();
@@ -37,13 +38,12 @@ public class GetData {
         List<String> sinhvien = new ArrayList<>();
 		  try {
               DatagramSocket clientSocket = new DatagramSocket();
-              InetAddress serverAddress = InetAddress.getByName("localhost");
+              InetAddress serverAddress = InetAddress.getByName(Common.IPCONFIG.getIpAddress());
               String message = "GET_SINHVIEN:." +name+ ":.";
               byte[] sendData = message.getBytes();
               DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
               clientSocket.send(sendPacket);
 
-              // Nhận phản hồi từ server
               byte[] receiveData = new byte[1024];
               DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
               clientSocket.receive(receivePacket);
@@ -61,24 +61,21 @@ public class GetData {
         List<String> baithi = new ArrayList<>();
 		  try {
               DatagramSocket clientSocket = new DatagramSocket();
-              InetAddress serverAddress = InetAddress.getByName("localhost");
+              InetAddress serverAddress = InetAddress.getByName(Common.IPCONFIG.getIpAddress());
               String message = "GET_BAITHI:." +name+ ":.";
               byte[] sendData = message.getBytes();
               DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
               clientSocket.send(sendPacket);
 
-              // Nhận phản hồi từ server
               byte[] receiveData = new byte[1024];
               DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
               clientSocket.receive(receivePacket);
               String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
               clientSocket.close();
               
-              System.out.println(response);
               String[] classes = response.split(";");
               for (String className : classes) {
-            	  baithi.add(className.trim());  // Thêm từng lớp vào danh sách và loại bỏ khoảng trắng
-            	  System.out.println(className.trim());
+            	  baithi.add(className.trim());  
               }
           } catch (Exception e) {
               e.printStackTrace();
@@ -89,23 +86,21 @@ public class GetData {
         List<String> cauhoi = new ArrayList<>();
 		  try {
               DatagramSocket clientSocket = new DatagramSocket();
-              InetAddress serverAddress = InetAddress.getByName("localhost");
+              InetAddress serverAddress = InetAddress.getByName(Common.IPCONFIG.getIpAddress());
               String message = "GET_CAUHOI:." +tenbaithi+ ":.";
               byte[] sendData = message.getBytes();
               DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
               clientSocket.send(sendPacket);
 
-              // Nhận phản hồi từ server
               byte[] receiveData = new byte[1024];
               DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
               clientSocket.receive(receivePacket);
               String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
               clientSocket.close();
 
-              System.out.println("sdfsdf" + response);
               String[] classes = response.split(";");
               for (String className : classes) {
-            	  cauhoi.add(className.trim());  // Thêm từng lớp vào danh sách và loại bỏ khoảng trắng
+            	  cauhoi.add(className.trim());  
               }
           } catch (Exception e) {
               e.printStackTrace();
@@ -116,13 +111,12 @@ public class GetData {
         List<String> thongke = new ArrayList<>();
 		  try {
               DatagramSocket clientSocket = new DatagramSocket();
-              InetAddress serverAddress = InetAddress.getByName("localhost");
+              InetAddress serverAddress = InetAddress.getByName(Common.IPCONFIG.getIpAddress());
               String message = "GET_THONGKE:." +name+ ":.";
               byte[] sendData = message.getBytes();
               DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
               clientSocket.send(sendPacket);
 
-              // Nhận phản hồi từ server
               byte[] receiveData = new byte[1024];
               DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
               clientSocket.receive(receivePacket);
@@ -131,7 +125,7 @@ public class GetData {
               
               String[] classes = response.split(";");
               for (String thongkee : classes) {
-            	  thongke.add(thongkee.trim());  // Thêm từng lớp vào danh sách và loại bỏ khoảng trắng
+            	  thongke.add(thongkee.trim());  
               }
           } catch (Exception e) {
               e.printStackTrace();
@@ -142,13 +136,12 @@ public class GetData {
         List<String> thongke = new ArrayList<>();
 		  try {
               DatagramSocket clientSocket = new DatagramSocket();
-              InetAddress serverAddress = InetAddress.getByName("localhost");
+              InetAddress serverAddress = InetAddress.getByName(Common.IPCONFIG.getIpAddress());
               String message = "STATISTICAL:.";
               byte[] sendData = message.getBytes();
               DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
               clientSocket.send(sendPacket);
 
-              // Nhận phản hồi từ server
               byte[] receiveData = new byte[1024];
               DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
               clientSocket.receive(receivePacket);
@@ -157,7 +150,7 @@ public class GetData {
               
               String[] part = response.split(";");
               for (String thongkee : part) {
-            	  thongke.add(thongkee.trim());  // Thêm từng lớp vào danh sách và loại bỏ khoảng trắng
+            	  thongke.add(thongkee.trim());
               }
           } catch (Exception e) {
               e.printStackTrace();
@@ -168,13 +161,12 @@ public class GetData {
         List<String> thongke = new ArrayList<>();
 		  try {
               DatagramSocket clientSocket = new DatagramSocket();
-              InetAddress serverAddress = InetAddress.getByName("localhost");
+              InetAddress serverAddress = InetAddress.getByName(Common.IPCONFIG.getIpAddress());
               String message = "STATISTICAL_SCORE:.";
               byte[] sendData = message.getBytes();
               DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
               clientSocket.send(sendPacket);
 
-              // Nhận phản hồi từ server
               byte[] receiveData = new byte[1024];
               DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
               clientSocket.receive(receivePacket);
@@ -183,11 +175,61 @@ public class GetData {
               
               String[] part = response.split(";");
               for (String thongkee : part) {
-            	  thongke.add(thongkee.trim());  // Thêm từng lớp vào danh sách và loại bỏ khoảng trắng
+            	  thongke.add(thongkee.trim()); 
               }
           } catch (Exception e) {
               e.printStackTrace();
           }
           return thongke;
     }
+	public List<String> getSinhVienByLop(String classId) {
+        List<String> sinhvienn = new ArrayList<>();
+		  try {
+              DatagramSocket clientSocket = new DatagramSocket();
+              InetAddress serverAddress = InetAddress.getByName(Common.IPCONFIG.getIpAddress());
+              String message = "GET_SINHVIEN_BYCLASS:." +classId+ ":.";
+              byte[] sendData = message.getBytes();
+              DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
+              clientSocket.send(sendPacket);
+
+              byte[] receiveData = new byte[1024];
+              DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+              clientSocket.receive(receivePacket);
+              String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+              clientSocket.close();
+              
+              String[] sinhviens = response.split(";");
+              for (String sinhvien : sinhviens) {
+            	  sinhvienn.add(sinhvien.trim());
+              }
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+          return sinhvienn;
+    }
+	public List<String> getTestOnline(String id_giangvien){
+		List<String> testsList = new ArrayList<>();
+		try {
+			DatagramSocket clientSocket = new DatagramSocket();
+            InetAddress serverAddress = InetAddress.getByName(Common.IPCONFIG.getIpAddress());
+            String message = "GET_TESTINFOR:." +id_giangvien+ ":.";
+            byte[] sendData = message.getBytes();
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 9876);
+            clientSocket.send(sendPacket);
+            
+            byte[] receiveData = new byte[1024];
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            clientSocket.receive(receivePacket);
+            String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+            clientSocket.close();
+            
+            String[] tests = response.split(";");
+            for (String test : tests) {
+            	testsList.add(test.trim()); 
+            }
+		}catch (Exception e) {
+            e.printStackTrace();
+        }
+		return testsList;
+	} 
 }

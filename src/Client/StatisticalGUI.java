@@ -49,7 +49,6 @@ public class StatisticalGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public StatisticalGUI() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 729, 447);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -67,14 +66,13 @@ public class StatisticalGUI extends JFrame {
 		contentPane.add(tabbedPane);
 		
 		JPanel panel = new JPanel();
-	    panel.setLayout(null); // Sử dụng layout tùy chỉnh nếu cần
+	    panel.setLayout(null); 
 	    tabbedPane.addTab("STUDENT COUNT", null, panel, null);
 	    
-	 // Gắn biểu đồ vào tab "Student"
 	    setDataToChart1(panel);
 		
 		JPanel panel_1 = new JPanel();
-		panel_1.setLayout(null); // Sử dụng layout tùy chỉnh nếu cần
+		panel_1.setLayout(null); 
 		tabbedPane.addTab("STUDENT SCORE", null, panel_1, null);
 		
 		setDataToChart2(panel_1);
@@ -87,7 +85,7 @@ public class StatisticalGUI extends JFrame {
 	        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 	        if (listItem != null) {
 	            for (String item : listItem) {
-	            	String[] parts = item.split("-"); // Tách chuỗi bằng dấu "-"
+	            	String[] parts = item.split("-"); 
 	                String ngayLam = parts[0];
 	                int soLuongHocVien = Integer.valueOf(parts[1]) ;
 	                dataset.addValue(soLuongHocVien, "Số lượng sinh viên", ngayLam);
@@ -109,24 +107,18 @@ public class StatisticalGUI extends JFrame {
 	        jpnItem.repaint();
 	   }
 	 public void setDataToChart2(JPanel jpnItem) {
-		    // Lấy dữ liệu thống kê từ bảng thongke
 		    GetData getData = new GetData();
 		    List<String> listItem = getData.getThongkeDiemThi();
-
-		    // Tạo dataset cho biểu đồ tròn
 		    DefaultPieDataset dataset = new DefaultPieDataset();
 
 		    if (listItem != null) {
 		        for (String item : listItem) {
-		            // Giả sử chuỗi item có định dạng "diem-soluong"
-		            String[] parts = item.split("-"); // Tách chuỗi bằng dấu "-"
-		            String diem = parts[0];          // Cột điểm
-		            int soLuong = Integer.parseInt(parts[1]); // Số lượng sinh viên có điểm này
+		            String[] parts = item.split("-"); 
+		            String diem = parts[0];          
+		            int soLuong = Integer.parseInt(parts[1]);
 		            dataset.setValue("Điểm " + diem, soLuong);
 		        }
 		    }
-
-		    // Tạo biểu đồ tròn
 		    JFreeChart chart = ChartFactory.createPieChart(
 		            "BIỂU ĐỒ THỐNG KÊ ĐIỂM THI",   
 		            dataset,             

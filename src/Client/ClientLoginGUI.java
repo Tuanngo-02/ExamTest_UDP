@@ -123,19 +123,17 @@ public class ClientLoginGUI extends JFrame {
 				ClientLogin clientLogin = new ClientLogin();
 				try {
 				    clientLogin.Login(username_TF.getText(), password_TF.getText(), select, response -> {
-				        // Xử lý response ở đây
-				        String note = response;  // Cập nhật note trong callback
+				       
+				        String note = response;  
 				       
 				        if (note.equals("Login successful")) {
 				            JOptionPane.showMessageDialog(null, "Login successful");
 				            if (select.equals("Student")) {
 				                StudentGUI studentGUI = new StudentGUI(username_TF.getText());
 				                studentGUI.setVisible(true);
-				                dispose();
 				            } else if (select.equals("Teacher")) {
 				                TeacherGUI teacherGUI = new TeacherGUI(username_TF.getText());
 				                teacherGUI.setVisible(true);
-				                dispose();
 				            }
 				        } else {
 				            JOptionPane.showMessageDialog(null, note);

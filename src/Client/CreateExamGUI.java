@@ -51,7 +51,6 @@ public class CreateExamGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public CreateExamGUI(String name) {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 361, 332);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -111,21 +110,12 @@ public class CreateExamGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Chọn file Excel");
-
-                // Chỉ cho phép chọn file có đuôi .xlsx hoặc .xls
                 FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel Files", "xlsx", "xls");
                 fileChooser.setFileFilter(filter);
-
-                // Mở hộp thoại chọn file
                 int result = fileChooser.showOpenDialog(null);
-                // Kiểm tra nếu người dùng chọn file
                 if (result == JFileChooser.APPROVE_OPTION) {
                 	selectedFile = fileChooser.getSelectedFile();
                     textNotification.setText("Đã chọn file: " + selectedFile.getAbsolutePath());
-                    System.out.println("Đã chọn file: " + selectedFile.getAbsolutePath());
-                    
-                    // Xử lý file Excel được chọn ở đây
-                    // importExamFromExcel(selectedFile.getAbsolutePath());
                 } else {
                     System.out.println("Không có file nào được chọn.");
                 }
@@ -139,6 +129,8 @@ public class CreateExamGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				SendDataToDB sendDataToDB = new SendDataToDB();
                 sendDataToDB.excel(tfName.getText(), tfSubject.getText() ,selectedFile.getAbsolutePath());
+                JOptionPane.showMessageDialog(null,"LƯU THÀNH CÔNG!!!",
+    	                "THÔNG BÁO", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 		btnConfirm.setBounds(229, 264, 85, 21);

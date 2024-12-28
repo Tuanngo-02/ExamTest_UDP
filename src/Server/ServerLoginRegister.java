@@ -6,13 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Config.Common;
+
 public class ServerLoginRegister {
-	String urldb = "jdbc:mysql://localhost:3306/test_online"; // URL cơ sở dữ liệu
-    String userdb = "root"; // Tên đăng nhập cơ sở dữ liệu
-    String passdb = "root"; // Mật khẩu cơ sở dữ liệu
-    
-    
-    
+	String urldb = Common.DATABASECONFIG.getDbUrl(); 
+    String userdb = Common.DATABASECONFIG.getDbUser(); 
+    String passdb = Common.DATABASECONFIG.getDbPass(); 
     //Login
     public String CheckLogin(String username, String password, String role) {
     	String query = "";

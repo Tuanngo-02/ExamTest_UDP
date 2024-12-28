@@ -27,7 +27,7 @@ public class ClientRegisterGUI extends JFrame {
 	private JTextField email_TF;
 	private JPasswordField passwordField;
 	private JPasswordField passwordField_1;
-	private JComboBox role_JCB;
+	public JComboBox role_JCB;
 	private JComboBox classs_TF;
 	private JLabel lblNewLabel_2_1_2_1_1;
 	private JTextField code_TF;
@@ -162,7 +162,6 @@ public class ClientRegisterGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String selectedRole = (String) role_JCB.getSelectedItem();
                 
-                // Kiểm tra giá trị được chọn và cập nhật nhãn
                 if ("Student".equals(selectedRole)) {
                 	lblNewLabel_2_1_2_1_1.setText("Class:");
                 	classs_TF.setVisible(true);

@@ -20,7 +20,7 @@ public class ExamHistoryGUI extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    ExamHistoryGUI frame = new ExamHistoryGUI("thanhkhaa");
+                    ExamHistoryGUI frame = new ExamHistoryGUI(null);
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -34,7 +34,6 @@ public class ExamHistoryGUI extends JFrame {
      */
     public ExamHistoryGUI(String name) {
         GetData getData = new GetData();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 600, 400);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -61,7 +60,7 @@ public class ExamHistoryGUI extends JFrame {
         lbName.setBounds(70, 50, 200, 16);
         contentPane.add(lbName);
 
-        JLabel lbClass = new JLabel("Class 1"); // Bạn có thể thay đổi thông tin lớp.
+        JLabel lbClass = new JLabel("Class 1"); 
         lbClass.setFont(new Font("Tahoma", Font.PLAIN, 13));
         lbClass.setBounds(70, 80, 200, 16);
         contentPane.add(lbClass);
@@ -71,19 +70,15 @@ public class ExamHistoryGUI extends JFrame {
         String classSV = "";
         String fullName = "";
         for (String sinhvienn : sinhvien) {
-        	String[] parts = sinhvienn.split("-"); // Tách chuỗi bằng dấu "-"
+        	String[] parts = sinhvienn.split("-"); 
         	fullName = parts[1];
             classSV = parts[3];
         }
         lbName.setText(fullName);
         lbClass.setText(classSV);
-
-        // Tạo JScrollPane để hiển thị danh sách bài thi
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(10, 130, 560, 220);
         contentPane.add(scrollPane);
-
-        // Panel chứa các thông tin bài thi
         JPanel panelList = new JPanel();
         panelList.setLayout(new BoxLayout(panelList, BoxLayout.Y_AXIS));
         scrollPane.setViewportView(panelList);
@@ -107,19 +102,13 @@ public class ExamHistoryGUI extends JFrame {
         lblTime.setFont(new Font("Tahoma", Font.BOLD, 15));
         lblTime.setBounds(465, 100, 72, 30);
         contentPane.add(lblTime);
-
-        // Lấy danh sách bài thi
         List<String> baithis = getData.getThongkeByUserName(name);
-
-        // Tạo các panel con cho từng bài thi
         for (String thongke : baithis) {
-            String[] parts = thongke.split("-"); // Tách chuỗi bằng dấu "-"
+            String[] parts = thongke.split("-"); 
             String date = parts[0];
             String nameExam = parts[1];
             String score = parts[2];
             String timeUsed = parts[3];
-
-            // Tạo panel cho một bài thi
             JPanel panel = new JPanel();
             panel.setLayout(new GridLayout(1, 4));
             panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -138,12 +127,8 @@ public class ExamHistoryGUI extends JFrame {
             panel.add(lbNameEx);
             panel.add(lblResult);
             panel.add(lbTime);
-
-            // Thêm panel vào danh sách
             panelList.add(panel);
         }
-
-        // Làm mới giao diện để hiển thị các bài thi
         panelList.revalidate();
         panelList.repaint();
     }

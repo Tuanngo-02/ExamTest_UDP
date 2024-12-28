@@ -66,31 +66,25 @@ public class StudentGUI extends JFrame {
 	    	public void actionPerformed(ActionEvent e) {
 	    		ClientLoginGUI clientLoginGUI = new ClientLoginGUI();
 	    		clientLoginGUI.setVisible(true);
-				dispose();
+	    		dispose();
 	    	}
 	    });
 	    btnLogout.setBounds(571, 13, 122, 41);
 	    contentPane.add(btnLogout);
 
-	    // Panel chính chứa các nút
 	    JPanel gridPanel = new JPanel();
-	    gridPanel.setLayout(new GridLayout(0, 4, 10, 10)); // Lưới: 4 cột, các hàng tự động, khoảng cách 10px
+	    gridPanel.setLayout(new GridLayout(0, 4, 10, 10)); 
 	    gridPanel.setBounds(10, 91, 672, 327);
-
-	    // Lấy danh sách bài thi
 	    GetData getData = new GetData();
 	    List<String> baithis = getData.getBaiThiByLop(name);
-	    // Tạo các nút động cho từng bài thi
 	    for (String exam : baithis) {
-	    	String[] parts = exam.split("-"); // Tách chuỗi bằng dấu "-"
+	    	String[] parts = exam.split("-"); 
 	        String examName = parts[0]; 
 	        String timeExam = parts[1];
 	        String subject = parts[2];
 	        JButton examButton = new JButton("<html>Name Exam: " + examName + "<br>Subject: " + subject +"<br>Time: " + timeExam+ "</html>");
 	        examButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
-	        examButton.setPreferredSize(new Dimension(100, 100)); // Kích thước mỗi ô hình vuông
-
-	        // Thêm sự kiện khi nhấn vào nút
+	        examButton.setPreferredSize(new Dimension(100, 100)); 
 	        examButton.addActionListener(e -> {        
 	            int option = JOptionPane.showConfirmDialog(
 	                null, 
@@ -107,12 +101,8 @@ public class StudentGUI extends JFrame {
 	                System.out.println("Không tham gia bài thi.");
 	            }
 	        });
-
-	        // Thêm nút vào gridPanel
 	        gridPanel.add(examButton);
 	    }
-
-	    // Thêm gridPanel vào contentPane
 	    contentPane.add(gridPanel);
 	    
 	    username = new JLabel("New label");
@@ -125,13 +115,11 @@ public class StudentGUI extends JFrame {
 	    	public void actionPerformed(ActionEvent e) {
 	    		ExamHistoryGUI examHistoryGUI = new ExamHistoryGUI(name);
 	    		examHistoryGUI.setVisible(true);
-				dispose();
 	    	}
 	    });
 	    btnNewButton.setBounds(140, 23, 122, 21);
 	    contentPane.add(btnNewButton);
 
-	    // Cập nhật giao diện
 	    gridPanel.revalidate();
 	    gridPanel.repaint();
 	}

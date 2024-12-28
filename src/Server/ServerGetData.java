@@ -8,10 +8,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Config.Common;
+
 public class ServerGetData {
-	String urldb = "jdbc:mysql://localhost:3306/test_online"; // URL cơ sở dữ liệu
-    String userdb = "root"; // Tên đăng nhập cơ sở dữ liệu
-    String passdb = "root"; // Mật khẩu cơ sở dữ liệu
+	String urldb = Common.DATABASECONFIG.getDbUrl(); 
+    String userdb = Common.DATABASECONFIG.getDbUser(); 
+    String passdb = Common.DATABASECONFIG.getDbPass(); 
     public List<String> getAllStudents() {
         String query = "SELECT * FROM lop";
         List<String> lop = new ArrayList<>();
@@ -21,7 +23,6 @@ public class ServerGetData {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                // Lấy fullname và student_id từ kết quả truy vấn
                 String className = rs.getString("lop");
                 lop.add(className);
             }
@@ -38,19 +39,14 @@ public class ServerGetData {
 
         try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            // Thiết lập giá trị cho tham số trong câu truy vấn
             pstmt.setString(1, username);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    // Lấy tất cả các thông tin cần thiết từ bảng
                     int id = rs.getInt("id");
                     String ten = rs.getString("ten");
                     String email = rs.getString("email");
-                    String lop = rs.getString("lop"); // hoặc bất kỳ cột nào khác
-
-                    // Ghép thông tin lại thành một chuỗi
+                    String lop = rs.getString("lop"); 
                     String info = "ID: " + id + ", Tên: " + ten + ", Email: " + email + ", Lớp: " + lop;
                     giangVienInfo.add(info);
                 }
@@ -69,19 +65,14 @@ public class ServerGetData {
 
         try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            // Thiết lập giá trị cho tham số trong câu truy vấn
             pstmt.setString(1, username);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    // Lấy tất cả các thông tin cần thiết từ bảng
                     int id = rs.getInt("id");
                     String ten = rs.getString("fullname");
                     String email = rs.getString("email");
-                    String lop = rs.getString("class"); // hoặc bất kỳ cột nào khác
-
-                    // Ghép thông tin lại thành một chuỗi
+                    String lop = rs.getString("class");
                     String info = id+"-"+ten+"-"+email+"-"+lop;
                     sinhvienInfo.add(info);
                 }
@@ -95,20 +86,12 @@ public class ServerGetData {
         return sinhvienInfo;
     }
     public List<String> getBaiThiByLop(String name) {
-        // Kết quả lưu danh sách bài thi
         List<String> baiThiList = new ArrayList<>();
-
-        // Truy vấn để lấy thông tin lớp từ sinh viên
         String querySinhVien = "SELECT class FROM sinhvien WHERE username = ?";
-        
-        // Truy vấn để lấy lop_id từ bảng lop
         String queryLop = "SELECT id FROM lop WHERE lop = ?";
-        
-        // Truy vấn để lấy danh sách bài thi
         String queryBaiThi = "SELECT * FROM baithi WHERE id_lop = ?";
         
         try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb)) {
-            // Bước 1: Tìm tên lớp (lop) từ bảng sinhvien
             String className = null;
             try (PreparedStatement pstmt1 = conn.prepareStatement(querySinhVien)) {
                 pstmt1.setString(1, name);
@@ -118,14 +101,10 @@ public class ServerGetData {
                     }
                 }
             }
-
-            // Kiểm tra tên lớp có tồn tại không
             if (className == null) {
                 System.out.println("Không tìm thấy sinh viên với tên: " + name);
                 return baiThiList;
             }
-
-            // Bước 2: Tìm lop_id từ bảng lop
             String lopId = null;
             try (PreparedStatement pstmt2 = conn.prepareStatement(queryLop)) {
                 pstmt2.setString(1, className);
@@ -135,14 +114,10 @@ public class ServerGetData {
                     }
                 }
             }
-
-            // Kiểm tra lop_id có tồn tại không
             if (lopId == null) {
                 System.out.println("Không tìm thấy ID lớp cho lớp: " + className);
                 return baiThiList;
             }
-
-            // Bước 3: Lấy danh sách bài thi từ bảng baithi
             try (PreparedStatement pstmt3 = conn.prepareStatement(queryBaiThi)) {
                 pstmt3.setString(1, lopId);
                 try (ResultSet rs3 = pstmt3.executeQuery()) {
@@ -163,9 +138,7 @@ public class ServerGetData {
         return baiThiList;
     }
     public List<String> getCauHoiByBaiThi(String tenBaiThi) {
-        // Câu truy vấn lấy id_baithi từ bảng baithi
         String queryBaiThi = "SELECT * FROM baithi WHERE tenbaithi = ?";
-        // Câu truy vấn lấy danh sách câu hỏi từ bảng cauhoi
         String queryCauHoi = "SELECT * FROM cauhoi WHERE id_baithi = ?";
         
         List<String> danhSachCauHoi = new ArrayList<>();
@@ -173,14 +146,11 @@ public class ServerGetData {
         try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
              PreparedStatement pstmtBaiThi = conn.prepareStatement(queryBaiThi)) {
              
-            // Thiết lập giá trị cho tham số trong câu truy vấn bảng baithi
             pstmtBaiThi.setString(1, tenBaiThi);
 
             try (ResultSet rsBaiThi = pstmtBaiThi.executeQuery()) {
                 if (rsBaiThi.next()) {
                     int idBaiThi = rsBaiThi.getInt("id");
-             
-                    // Thực hiện truy vấn bảng cauhoi để lấy danh sách câu hỏi
                     try (PreparedStatement pstmtCauHoi = conn.prepareStatement(queryCauHoi)) {
                         pstmtCauHoi.setInt(1, idBaiThi);
 
@@ -219,15 +189,12 @@ public class ServerGetData {
 
         try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
              PreparedStatement pstmtsinhvien = conn.prepareStatement(querysinhvien)) {
-             
-            // Thiết lập giá trị cho tham số trong câu truy vấn bảng baithi
+           
         	pstmtsinhvien.setString(1, name);
 
             try (ResultSet rsSinhVien = pstmtsinhvien.executeQuery()) {
                 if (rsSinhVien.next()) {
                     int id_sinhvien = rsSinhVien.getInt("id");
-             
-                    // Thực hiện truy vấn bảng cauhoi để lấy danh sách câu hỏi
                     try (PreparedStatement pstmtThongKe = conn.prepareStatement(querythongke)) {
                     	pstmtThongKe.setInt(1, id_sinhvien);
 
@@ -237,8 +204,7 @@ public class ServerGetData {
                                 String thoigianlambai = rsThongKe.getString("thoigianlambai");
                                 String ngaylam = rsThongKe.getString("ngaylam");
                                 int diem = rsThongKe.getInt("diem");
-                                
-                             // Lấy tên bài thi từ bảng baithi
+                              
                                 String tenBaiThi = "";
                                 try (PreparedStatement pstmtBaiThi = conn.prepareStatement(queryBaiThi)) {
                                     pstmtBaiThi.setInt(1, id_baithi);
@@ -301,6 +267,75 @@ public class ServerGetData {
         }
         return list;
     }
+    public List<String> getSinhVienByClassId(String classId) {
+        String query = "SELECT * FROM sinhvien WHERE class = ?";
+        List<String> sinhvienInfo = new ArrayList<>();
+
+        try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb);
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, classId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String username = rs.getString("username");
+                    String ten = rs.getString("fullname");
+                    String email = rs.getString("email");
+                    String info = id+"-"+username+"-"+ten+"-"+email;
+                    sinhvienInfo.add(info);
+                }
+            }
+
+            System.out.println("Sinhvien information retrieved successfully.");
+        } catch (SQLException e) {
+            System.out.println("Error retrieving GiangVien information: " + e.getMessage());
+        }
+
+        return sinhvienInfo;
+    }
+    public List<String> getTestOnline(String name) { 
+        String queryGiangVien = "SELECT id FROM giangvien WHERE username = ?"; 
+        String queryBaiThi = "SELECT * FROM baithi WHERE id_giangvien = ?"; 
+        List<String> baithiInfo = new ArrayList<>();
+
+        try (Connection conn = DriverManager.getConnection(urldb, userdb, passdb)) {
+            String id_giangvien = null;
+            try (PreparedStatement pstmtGiangVien = conn.prepareStatement(queryGiangVien)) {
+                pstmtGiangVien.setString(1, name);
+
+                try (ResultSet rsGiangVien = pstmtGiangVien.executeQuery()) {
+                    if (rsGiangVien.next()) {
+                        id_giangvien = rsGiangVien.getString("id"); // Lấy id_giangvien
+                    } else {
+                        System.out.println("No lecturer found with name: " + name);
+                        return baithiInfo; 
+                    }
+                }
+            }
+            try (PreparedStatement pstmtBaiThi = conn.prepareStatement(queryBaiThi)) {
+                pstmtBaiThi.setString(1, id_giangvien);
+
+                try (ResultSet rsBaiThi = pstmtBaiThi.executeQuery()) {
+                    while (rsBaiThi.next()) {
+                        int id = rsBaiThi.getInt("id");
+                        String tenbaithi = rsBaiThi.getString("tenbaithi");
+                        String monhoc = rsBaiThi.getString("monhoc");
+                        String thoigian = rsBaiThi.getString("thoigian");
+                        String info = id + "-" + tenbaithi + "-" + monhoc + "-" + thoigian;
+                        baithiInfo.add(info);
+                    }
+                }
+            }
+
+            System.out.println("Test information retrieved successfully.");
+        } catch (SQLException e) {
+            System.out.println("Error retrieving GiangVien or BaiThi information: " + e.getMessage());
+        }
+
+        return baithiInfo;
+    }
+
     
     
 

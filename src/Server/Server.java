@@ -5,32 +5,15 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Server {
     
     
 	private static String handleRequest(String request) throws IOException {
-		System.out.println(request);
-		/*
-		 * [0]: yêu cầu
-		 * [1]: username
-		 * [2]: password
-		 * [3]: role
-		 * [4]: fullname
-		 * [5]: email
-		 * [6]: classs
-		*/
 		 String[] requestParts = request.split(":.");
 		 String command = requestParts[0];
-//		 String username = requestParts[1];
-//		 String password = requestParts[2];
-//		 String role = requestParts[3];
-//		 String fullname = requestParts[4];
-//		 String email = requestParts[5];
-//		 String classs = requestParts[6];
-//		 
-//		 String className = requestParts[7];
 		
 		switch (command) {
 		case "LOGIN":
@@ -49,40 +32,97 @@ public class Server {
 		{
 			ServerGetData serverGetData = new ServerGetData();
 			List<String> lop  =  serverGetData.getAllStudents();
-			System.out.println(String.join(";", lop));
-		    return String.join(";", lop); // Trả về dữ liệu dưới dạng chuỗi
+			System.out.println("result "+String.join(";", lop));
+		    return String.join(";", lop); 
 		}
 		case "GET_SINHVIEN":
 		{
 			String username = requestParts[1];
 			ServerGetData serverGetData = new ServerGetData();
 			List<String> sinhvien  =  serverGetData.getSinhVienByUserName(username);
-			System.out.println("chuoi"+String.join(";", sinhvien));
-		    return String.join(";", sinhvien); // Trả về dữ liệu dưới dạng chuỗi
+			System.out.println("result "+String.join(";", sinhvien));
+		    return String.join(";", sinhvien);
+		}
+		case "GET_SINHVIEN_BYCLASS":
+		{
+			String classId = requestParts[1];
+			ServerGetData serverGetData = new ServerGetData();
+			List<String> sinhvien  =  serverGetData.getSinhVienByClassId(classId);
+			System.out.println("result "+String.join(";", sinhvien));
+		    return String.join(";", sinhvien); 
+		}
+		case "GET_TESTINFOR":
+		{
+			String id_giangvien = requestParts[1];
+			ServerGetData serverGetData = new ServerGetData();
+			List<String> test  =  serverGetData.getTestOnline(id_giangvien);
+			System.out.println("result "+String.join(";", test));
+		    return String.join(";", test); 
 		}
 		case "GET_BAITHI":
 		{
 			String username = requestParts[1];
 			ServerGetData serverGetData = new ServerGetData();
 			List<String> baithi  =  serverGetData.getBaiThiByLop(username);
-			System.out.println("chuoi"+String.join(";", baithi));
-		    return String.join(";", baithi); // Trả về dữ liệu dưới dạng chuỗi
+			System.out.println("result "+String.join(";", baithi));
+		    return String.join(";", baithi); 
 		}
 		case "GET_CAUHOI":
 		{
 			String tenbaithi = requestParts[1];
 			ServerGetData serverGetData = new ServerGetData();
 			List<String> baithi  =  serverGetData.getCauHoiByBaiThi(tenbaithi);
-			System.out.println("ssdsdfsdf"+String.join(";", baithi));
-		    return String.join(";", baithi); // Trả về dữ liệu dưới dạng chuỗi
+			System.out.println("result "+String.join(";", baithi));
+		    return String.join(";", baithi); 
 		}
 		case "GET_THONGKE":
 		{
 			String username = requestParts[1];
 			ServerGetData serverGetData = new ServerGetData();
 			List<String> thongke  =  serverGetData.getThongKeByUserName(username);
-			System.out.println("ssdsdfsdf"+String.join(";", thongke));
-		    return String.join(";", thongke); // Trả về dữ liệu dưới dạng chuỗi
+			System.out.println("result "+String.join(";", thongke));
+		    return String.join(";", thongke); 
+		}
+		case "UPDATE_SINHVIEN":
+		{
+			String id = requestParts[1];
+			String username = requestParts[2];
+            String fullname = requestParts[3];
+            String email = requestParts[4];
+            String classId = requestParts[5];
+            ServerSaveData saveData = new ServerSaveData();
+            saveData.updateSinhVien(id, username, fullname, email, classId);
+            break;
+		}
+		case "UPDATE_TEST":
+		{
+			request = request.replace(":.", ":");
+			String[] parts = request.split(":");
+	        String id = parts[1]; 
+	        String tenbaithi = parts[2]; 
+	        String monhoc = parts[3]; 
+	        String thoigian = parts[4] + ":" + parts[5] + ":" + parts[6]; 
+            ServerSaveData saveData = new ServerSaveData();
+            saveData.updateTest(id, tenbaithi, monhoc, thoigian);
+            break;
+		}
+		case "DELETE_SINHVIEN":
+		{
+			String id = requestParts[1].replaceAll("[\\[\\] ]", "");
+	        String[] parts = id.split(",");  
+	        List<String> listId = new ArrayList<>(Arrays.asList(parts));
+            ServerDeleteData deleteData = new ServerDeleteData();
+            deleteData.deleteSinhVienById(listId);
+            break;
+		}
+		case "DELETE_TESTEXAM":
+		{
+			String id = requestParts[1].replaceAll("[\\[\\] ]", "");
+	        String[] parts = id.split(",");  
+	        List<String> listId = new ArrayList<>(Arrays.asList(parts));
+            ServerDeleteData deleteData = new ServerDeleteData();
+            deleteData.deleteTestExamById(listId);
+            break;
 		}
 		case "QUESTION":
 		{
@@ -94,11 +134,6 @@ public class Server {
             ServerSaveData saveData = new ServerSaveData();
             saveData.saveCauHoi(nameExam, questionOrder, questionText, options, correctAnswer);
             System.out.println(nameExam);
-//			if (requestParts.length >= 7) {
-//                
-//            } else {
-//                return "Insufficient data for QUESTION request";
-//            }
 		}
 		case "BAITHI":
 		{
@@ -109,16 +144,9 @@ public class Server {
             
             String[] parts = request.split(":\\.");
             String time = parts[parts.length - 1]; 
-            System.out.println("Thời gian: " + time);
   
             ServerSaveData saveData = new ServerSaveData();
             saveData.saveBaiThi(username,name, subject,time, classID);
-//			if (requestParts.length >= 2) {
-//                
-////                System.out.println(username);
-//            } else {
-//                return "Insufficient data for QUESTION request";
-//            
             break;
 		}
 		case "RESULT":
@@ -129,14 +157,9 @@ public class Server {
 	        String[] parts = request.split(":\\.");
 	        String time = parts[parts.length - 1];
 
-	        System.out.println(time);
-	        // Loại bỏ dấu ngoặc vuông đầu và cuối
 	        extractedPart = extractedPart.substring(1, extractedPart.length() - 1);
 
-	        // Tách thành từng phần tử dựa trên dấu ","
 	        String[] pairs = extractedPart.split(", ");
-
-	        // Tạo danh sách lưu kết quả
 	        List<String> values = new ArrayList<>();
 	        for (String pair : pairs) {
 	            values.add(pair);
@@ -148,14 +171,14 @@ public class Server {
 		{
 	        ServerGetData serverGetData = new ServerGetData();
 	        List<String> thongke =  serverGetData.getListThongKe();
-	        System.out.println("ssdsdfsdf"+String.join(";", thongke));
+	        System.out.println("result "+String.join(";", thongke));
 		    return String.join(";", thongke);
 		}
 		case "STATISTICAL_SCORE":
 		{
 	        ServerGetData serverGetData = new ServerGetData();
 	        List<String> thongke =  serverGetData.getListThongKeDiemThi();
-	        System.out.println("ssdsdfsdf"+String.join(";", thongke));
+	        System.out.println("result "+String.join(";", thongke));
 		    return String.join(";", thongke);
 		}
 		case "REGISTER":
@@ -182,17 +205,13 @@ public class Server {
 	            
 	            while (true) {
 	                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-	                // Nhận một gói tin
 	                socket.receive(receivePacket);
 
 	                String clientRequest = new String(receivePacket.getData(), 0, receivePacket.getLength());
 	                InetAddress clientAddress = receivePacket.getAddress();
 	                int clientPort = receivePacket.getPort();
-
-	                // Tạo một thread mới để xử lý yêu cầu
 	                new Thread(() -> { 
 	                    try {
-	                        // Gửi phản hồi về Client
 	                        String response = handleRequest(clientRequest);
 	                        byte[] sendData = response.getBytes();
 	                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientAddress, clientPort);
@@ -200,7 +219,7 @@ public class Server {
 	                    } catch (Exception e) {
 	                        e.printStackTrace();
 	                    }
-	                }).start(); // Khởi động thread mới
+	                }).start(); 
 	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();;
